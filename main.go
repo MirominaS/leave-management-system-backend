@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 	"leave-management/database"
-
-	// "leave-management/routes"
+	"leave-management/routes"
 	"log"
 	"net/http"
 	"os"
@@ -32,8 +31,8 @@ func main() {
 		port = "8080"
 	}
 
-	// router := routes.RegisterRoutes()
+	router := routes.RegisterRoutes()
 
 	fmt.Println("Server is running on port",port)
-	// log.Fatal(http.ListenAndServe(":"+port,router))
+	log.Fatal(http.ListenAndServe(":"+port,router))
 }
