@@ -25,6 +25,31 @@ func GetDashboard(w http.ResponseWriter, r *http.Request){
 	database.DB.QueryRow(
 		"SELECT COUNT(*) FROM leave_request WHERE status_id = 3",
 	).Scan(&dashboard.RejectedLeaves)
+
+	rows,err := database.DB.Query(`
+	SELECT r.role_name,
+		COUNT(e.id) FILTER (WHERE l.id IS NULL) as active_count,
+		COUNT(e.id) FILTER (WHERE l.id IS NOT NULL) as away_count
+	FROM roles r
+	LEFT JOIN employees e ON r.id = e.role_id
+	LEFT JOIN leave_request l ON e.id = l.employee_id
+		AND l.status_id = 2
+		AND CURRENT_DATE BETWEEN l.start_date AND l.end_date
+	GROUP BY r.role_name`)
+
+	if err != nil{
+		http.Error(w,err.Error(),http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next(){
+		var rs models.RoleStatus 
+		if err := rows.Scan(&rs.Title,&rs.Active,&rs.OnLeave); err != nil{
+			continue
+		}
+		dashboard.Roles = append(dashboard.Roles, rs)
+	}
 	
 	json.NewEncoder(w).Encode(dashboard)
 }
