@@ -129,3 +129,26 @@ func ApproveLeave(w http.ResponseWriter,r *http.Request){
 	})
 }
 
+func RejectLeave(w http.ResponseWriter, r *http.Request){
+	role := r.Header.Get("role_id")
+
+	if role != "4" && role != "6"{
+		http.Error(w,"Only Manager or Admin can reject leave",http.StatusForbidden)
+		return
+	} 
+
+	id := r.URL.Query().Get("id")
+
+	_, err := database.DB.Exec(
+		"UPDATE leave_request SET status_id = 3 WHERE id=$1",
+		id,
+	)
+	if err != nil{
+		http.Error(w,err.Error(),http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":"Leave rejected",
+	})
+}
