@@ -76,3 +76,17 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request){
 		"message":"Employee created successfully",
 	})
 }
+
+func GetProfile(w http.ResponseWriter, r *http.Request) {
+    empID := r.URL.Query().Get("id")
+    var emp models.Employee
+    err := database.DB.QueryRow("SELECT id, name, email FROM employees WHERE id = $1", empID).Scan(&emp.ID, &emp.Name, &emp.Email)
+    
+    if err != nil {
+        http.Error(w, "User not found", http.StatusNotFound)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(emp)
+}
