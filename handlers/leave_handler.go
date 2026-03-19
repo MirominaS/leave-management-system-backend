@@ -170,6 +170,6 @@ func CancelLeave(w http.ResponseWriter, r *http.Request){
 	}
 
 	json.NewEncoder(w).Encode(map[string]string{
-		"message":"Leave cancelled"
+		"message":"Leave cancelled",
 	})
 }
