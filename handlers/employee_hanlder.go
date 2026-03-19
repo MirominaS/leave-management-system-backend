@@ -5,6 +5,8 @@ import (
 	"leave-management/database"
 	"leave-management/models"
 	"net/http"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -51,14 +53,26 @@ func CreateEmployee(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	query := `INSERT INTO employees (name,email,role_id)
-	VALUES ($1,$2,$3) RETURNING id`
+	hashedPassword,err := bcrypt.GenerateFromPassword(
+		[]byte(emp.Password),
+		bcrypt.DefaultCost,
+	)
 
-	err = database.DB.QueryRow(query,emp.Name,emp.Email,emp.RoleID).Scan(&emp.ID)
+	if err != nil{
+		http.Error(w,"Error hashing Password",http.StatusInternalServerError)
+		return
+	}
+
+	query := `INSERT INTO employees (name,email,password,role_id)
+	VALUES ($1,$2,$3,$4) RETURNING id`
+
+	err = database.DB.QueryRow(query,emp.Name,emp.Email,string(hashedPassword),emp.RoleID).Scan(&emp.ID)
 
 	if err != nil {
 		http.Error(w,err.Error(),http.StatusInternalServerError)
 		return
 	}
-	json.NewEncoder(w).Encode(emp)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":"Employee created successfully",
+	})
 }
