@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"leave-management/database"
+	"leave-management/middleware"
 	"leave-management/routes"
 	"log"
 	"net/http"
@@ -33,6 +34,8 @@ func main() {
 
 	router := routes.RegisterRoutes()
 
+	handler := middleware.EnableCORS(router)
+
 	fmt.Println("Server is running on port",port)
-	log.Fatal(http.ListenAndServe(":"+port,router))
+	log.Fatal(http.ListenAndServe(":"+port,handler))
 }
