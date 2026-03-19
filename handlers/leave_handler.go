@@ -152,3 +152,24 @@ func RejectLeave(w http.ResponseWriter, r *http.Request){
 		"message":"Leave rejected",
 	})
 }
+
+func CancelLeave(w http.ResponseWriter, r *http.Request){
+
+	employeeID := r.Header.Get("employee_id")
+	leaveID := r.URL.Query().Get("id")
+
+	_,err := database.DB.Exec(
+		`DELETE FROM leave_request WHERE id=$1
+		AND employee_id=$2`,
+		leaveID,employeeID,
+	)
+
+	if err != nil{
+		http.Error(w,err.Error(),http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":"Leave cancelled"
+	})
+}
