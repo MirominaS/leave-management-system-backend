@@ -60,6 +60,7 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	SELECT 
 	l.id,
 	e.name,
+	e.email,
 	lt.leave_type_name,
 	l.start_date,
 	l.end_date,
@@ -81,17 +82,19 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	for rows.Next(){
 		var id int
 		var name string
+		var email string
 		var start string
 		var end string
 		var leaveType string
 		var reason string
 		var status string
 
-		rows.Scan(&id,&name,&leaveType,&start,&end,&reason,&status)
+		rows.Scan(&id,&name,&email,&leaveType,&start,&end,&reason,&status)
 
 		leave := map[string]interface{}{
 			"id": id,
 			"employee": name,
+			"email":email,
 			"leave_type_name":leaveType,
 			"start_date": start,
 			"end_date": end,
@@ -102,6 +105,28 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	}
 	
 	json.NewEncoder(w).Encode(leaves)
+}
+
+func GetLeaveTypes(w http.ResponseWriter, r *http.Request){
+	rows, err := database.DB.Query("SELECT id, leave_type_name FROM leave_types")
+	if err != nil{
+		http.Error(w, err.Error(),http.StatusInternalServerError)
+		return
+	}
+	defer rows.Close()
+
+	var types []map[string]interface{}
+	for rows.Next(){
+		var id int
+		var name string
+		rows.Scan(&id,&name)
+		types = append(types, map[string]interface{}{
+			"id":id,
+			"name":name,
+		})
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode((types))
 }
 
 func ApproveLeave(w http.ResponseWriter,r *http.Request){
