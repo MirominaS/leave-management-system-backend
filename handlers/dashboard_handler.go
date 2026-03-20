@@ -53,3 +53,30 @@ func GetDashboard(w http.ResponseWriter, r *http.Request){
 	
 	json.NewEncoder(w).Encode(dashboard)
 }
+
+func GetRecentActivity(w http.ResponseWriter, r *http.Request){
+	rows, err := database.DB.Query(`
+		SELECT lr.id, e.name, ls.status_name, lr.created_at 
+		FROM leave_request lr
+		JOIN employees e ON lr.employee_id = e.id
+		JOIN leave_status ls ON lr.status_id = ls.id
+		ORDER BY lr.created_at DESC
+		LIMIT 5
+	`)
+
+	if err != nil {
+		http.Error(w,err.Error(), http.StatusInternalServerError)
+		return 
+	}
+	defer rows.Close()
+
+	var activities []models.Activity
+
+	for rows.Next(){
+		var a models.Activity
+		rows.Scan(&a.ID,&a.Name,&a.Status,&a.CreatedAt)
+		activities = append(activities,a)
+	}
+
+	json.NewEncoder(w).Encode(activities)
+}
