@@ -23,6 +23,7 @@ func RegisterRoutes() *http.ServeMux{
 
 
 	mux.HandleFunc("/dashboard", handlers.GetDashboard)
+	mux.HandleFunc("/activities", handlers.GetRecentActivity)
 	
 	return mux
 }
