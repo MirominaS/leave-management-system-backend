@@ -59,6 +59,7 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	rows, err := database.DB.Query(`
 	SELECT 
 	l.id,
+	l.employee_id,
 	e.name,
 	e.email,
 	lt.leave_type_name,
@@ -81,6 +82,7 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	var leaves []map[string]interface{}
 	for rows.Next(){
 		var id int
+		var employeeID int
 		var name string
 		var email string
 		var start string
@@ -89,10 +91,11 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 		var reason string
 		var status string
 
-		rows.Scan(&id,&name,&email,&leaveType,&start,&end,&reason,&status)
+		rows.Scan(&id,&employeeID,&name,&email,&leaveType,&start,&end,&reason,&status)
 
 		leave := map[string]interface{}{
 			"id": id,
+			"employee_id": employeeID,
 			"employee": name,
 			"email":email,
 			"leave_type_name":leaveType,
