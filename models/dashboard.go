@@ -1,6 +1,7 @@
 package models
 
 type RoleStatus struct{
+	ID int `json:"id"`
 	Title string `json:"title"`
 	Active int `json:"active"`
 	OnLeave int `json:"onLeave"`
