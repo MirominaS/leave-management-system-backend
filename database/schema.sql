@@ -1,15 +1,3 @@
---table leave_status
-CREATE TABLE leave_status(
-    id SERIAL PRIMARY KEY,
-    status_name VARCHAR(50) UNIQUE NOT NULL
-);
-
-INSERT INTO leave_status(status_name) VALUES
-    ('Pending'),
-    ('Approved'),
-    ('Rejected'),
-    ('Cancelled');
-
 -- employees table
 CREATE TABLE employees (
     id SERIAL PRIMARY KEY ,
