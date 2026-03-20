@@ -63,8 +63,8 @@ func GetLeaves(w http.ResponseWriter, r*http.Request){
 	e.name,
 	e.email,
 	lt.leave_type_name,
-	l.start_date,
-	l.end_date,
+	TO_CHAR(l.start_date,'YYYY-MM-DD'),
+	TO_CHAR(l.end_date,'YYYY-MM-DD'),
 	l.reason,
 	ls.status_name
 	FROM leave_request l
