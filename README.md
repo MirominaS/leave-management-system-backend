@@ -184,8 +184,7 @@ go run main.go
 The server will start at:
 
 ```
-http://localhost:PORT
-
+http://localhost:3300
 ```
 
 If the connection is successful, you will see:
