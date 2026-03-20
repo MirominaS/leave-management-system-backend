@@ -309,4 +309,4 @@ GET /activities
 # Author
 
 Software Engineer Intern Technical Assessment  
-ABC Company Leave Management System
+Miromina Sritharan
